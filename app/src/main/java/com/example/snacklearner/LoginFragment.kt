@@ -1,3 +1,4 @@
+// LoginFragment.kt
 package com.example.snacklearner
 
 import android.content.Context
@@ -55,53 +56,33 @@ class LoginFragment : Fragment() {
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         hideKeyboard(view)
-
                         val uid = auth.currentUser!!.uid
                         firestore.collection("users").document(uid).get()
                             .addOnSuccessListener { doc ->
                                 val role = doc.getString("role") ?: "user"
+                                val isAdmin = role == "admin"
 
-                                if (role == "admin") {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        "Prijavljen admin.",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                } else {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        "Prijavljen korisnik.",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-
-                                // Ažuriraj navigacijski meni prema roli
-                                (requireActivity() as MainActivity).updateDrawerForRole(role)
-
-                                // Prikaži toolbar i omogući Drawer
                                 activity.getToolbar().visibility = View.VISIBLE
-                                activity.getDrawerLayout().setDrawerLockMode(
-                                    DrawerLayout.LOCK_MODE_UNLOCKED
-                                )
+                                activity.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
 
-                                // Otvori početni SearchFragment
-                                parentFragmentManager.beginTransaction()
-                                    .replace(R.id.fragmentContainer, SearchFragment())
-                                    .commit()
-                            }
-                            .addOnFailureListener { e ->
-                                Toast.makeText(
-                                    requireContext(),
-                                    "Greška Firestore: ${e.message}",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                if (isAdmin) {
+                                    Toast.makeText(requireContext(), "Prijavljen admin.", Toast.LENGTH_SHORT).show()
+                                    val bundle = Bundle()
+                                    bundle.putBoolean("isAdmin", true)
+                                    val adminFragment = AdminFragment()
+                                    adminFragment.arguments = bundle
+                                    parentFragmentManager.beginTransaction()
+                                        .replace(R.id.fragmentContainer, adminFragment)
+                                        .commit()
+                                } else {
+                                    Toast.makeText(requireContext(), "Prijavljen korisnik.", Toast.LENGTH_SHORT).show()
+                                    parentFragmentManager.beginTransaction()
+                                        .replace(R.id.fragmentContainer, SearchFragment())
+                                        .commit()
+                                }
                             }
                     } else {
-                        Toast.makeText(
-                            requireContext(),
-                            "Greška pri prijavi: ${task.exception?.message}",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(requireContext(), "Greška: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                     }
                 }
         }

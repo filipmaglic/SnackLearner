@@ -1,3 +1,4 @@
+// UserAdapter.kt
 package com.example.snacklearner
 
 import android.view.LayoutInflater
@@ -8,16 +9,20 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class UserAdapter(
-    private var userList: List<Triple<String, String, String>>,
+    private var users: List<Triple<String, String, String>>, // email, role, uid
     private val onDeleteClicked: (String) -> Unit
 ) : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
 
-    private var isAdmin = false
+    private var isAdminMode: Boolean = false
 
-    class UserViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val emailTextView: TextView = itemView.findViewById(R.id.emailTextView)
-        val roleTextView: TextView = itemView.findViewById(R.id.roleTextView)
-        val deleteButton: Button = itemView.findViewById(R.id.deleteButton)
+    fun updateData(newUsers: List<Triple<String, String, String>>) {
+        users = newUsers
+        notifyDataSetChanged()
+    }
+
+    fun setAdminMode(isAdmin: Boolean) {
+        isAdminMode = isAdmin
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
@@ -27,27 +32,23 @@ class UserAdapter(
     }
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
-        val (email, role, uid) = userList[position]
+        val (email, role, uid) = users[position]
         holder.emailTextView.text = email
         holder.roleTextView.text = role
 
-        // Ako je admin, prikaži gumb za brisanje, inače sakrij
-        holder.deleteButton.visibility = if (isAdmin) View.VISIBLE else View.GONE
-        holder.deleteButton.setOnClickListener {
-            if (isAdmin) onDeleteClicked(uid)
+        if (isAdminMode) {
+            holder.deleteButton.visibility = View.VISIBLE
+            holder.deleteButton.setOnClickListener { onDeleteClicked(uid) }
+        } else {
+            holder.deleteButton.visibility = View.GONE
         }
     }
 
-    override fun getItemCount(): Int = userList.size
+    override fun getItemCount() = users.size
 
-    fun updateData(newList: List<Triple<String, String, String>>) {
-        userList = newList
-        notifyDataSetChanged()
-    }
-
-    //Omogućuje postavljanje admin mode-a
-    fun setAdminMode(admin: Boolean) {
-        isAdmin = admin
-        notifyDataSetChanged()
+    class UserViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val emailTextView: TextView = view.findViewById(R.id.userEmailTextView)
+        val roleTextView: TextView = view.findViewById(R.id.userRoleTextView)
+        val deleteButton: Button = view.findViewById(R.id.deleteUserButton)
     }
 }

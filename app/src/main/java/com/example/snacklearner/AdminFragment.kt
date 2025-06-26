@@ -43,6 +43,10 @@ class AdminFragment : Fragment() {
         )
         recyclerView.adapter = adapter
 
+        // Dohvati je li admin iz argumenata
+        isAdmin = arguments?.getBoolean("isAdmin") == true
+        adapter.setAdminMode(isAdmin)
+
         val logoutButton = view.findViewById<Button>(R.id.logoutButton)
         logoutButton.setOnClickListener {
             auth.signOut()
@@ -54,26 +58,21 @@ class AdminFragment : Fragment() {
         val enterAppButton = view.findViewById<Button>(R.id.enterAppButton)
         enterAppButton.setOnClickListener {
             parentFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, SearchFragment()) // Glavni ekran
+                .replace(R.id.fragmentContainer, SearchFragment())
                 .commit()
         }
 
-        checkIfCurrentUserIsAdmin { admin ->
-            isAdmin = admin
-            adapter.setAdminMode(admin)
-            if (admin) {
-                loadUsers()
-            } else {
-                Toast.makeText(
-                    requireContext(),
-                    "Niste admin – samo pregled aplikacije.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+        if (isAdmin) {
+            loadUsers()
+        } else {
+            Toast.makeText(
+                requireContext(),
+                "Niste admin – samo pregled aplikacije.",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
-    //Učitava korisnike samo ako je admin.
     private fun loadUsers() {
         firestore.collection("users").get()
             .addOnSuccessListener { result ->
@@ -83,7 +82,7 @@ class AdminFragment : Fragment() {
                         val role = doc.getString("role") ?: "user"
                         Triple(email, role, doc.id)
                     }
-                    .filter { (_, role, _) -> role != "admin" }
+                    .filter { (_, role, _) -> role != "admin" } // sakrij druge admine
                 adapter.updateData(users)
             }
             .addOnFailureListener { e ->
@@ -95,7 +94,6 @@ class AdminFragment : Fragment() {
             }
     }
 
-    //Briše korisnika samo ako je admin.
     private fun deleteUser(uid: String) {
         if (!isAdmin) {
             Toast.makeText(requireContext(), "Nemate ovlasti.", Toast.LENGTH_SHORT).show()
@@ -109,24 +107,6 @@ class AdminFragment : Fragment() {
             }
             .addOnFailureListener { e ->
                 Toast.makeText(requireContext(), "Greška: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-    }
-
-    //provjerava je li trenutni korisnik admin.
-    private fun checkIfCurrentUserIsAdmin(callback: (Boolean) -> Unit) {
-        val userId = auth.currentUser?.uid
-        if (userId == null) {
-            callback(false)
-            return
-        }
-
-        firestore.collection("users").document(userId).get()
-            .addOnSuccessListener { doc ->
-                val role = doc.getString("role") ?: "user"
-                callback(role == "admin")
-            }
-            .addOnFailureListener {
-                callback(false)
             }
     }
 }
