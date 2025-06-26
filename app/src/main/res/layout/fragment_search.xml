@@ -39,5 +39,11 @@
         android:layout_marginTop="8dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp" />
+    <TextView
+        android:id="@+id/testSearchFragmentLoaded"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SearchFragment loaded"
+        android:visibility="gone" />
 
 </RelativeLayout>
