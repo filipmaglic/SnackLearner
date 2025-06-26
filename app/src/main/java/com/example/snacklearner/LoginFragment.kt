@@ -9,8 +9,8 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -55,27 +55,46 @@ class LoginFragment : Fragment() {
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         hideKeyboard(view)
+
                         val uid = auth.currentUser!!.uid
                         firestore.collection("users").document(uid).get()
                             .addOnSuccessListener { doc ->
                                 val role = doc.getString("role") ?: "user"
+
                                 if (role == "admin") {
-                                    Toast.makeText(requireContext(), "Prijavljen admin.", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "Prijavljen admin.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 } else {
-                                    Toast.makeText(requireContext(), "Prijavljen korisnik.", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "Prijavljen korisnik.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
 
-                                // Update UI prema roli
+                                // Ažuriraj navigacijski meni prema roli
                                 (requireActivity() as MainActivity).updateDrawerForRole(role)
 
-                                // Pokaži toolbar i otključaj Drawer
+                                // Prikaži toolbar i omogući Drawer
                                 activity.getToolbar().visibility = View.VISIBLE
-                                activity.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+                                activity.getDrawerLayout().setDrawerLockMode(
+                                    DrawerLayout.LOCK_MODE_UNLOCKED
+                                )
 
-                                // Otvori SearchFragment
+                                // Otvori početni SearchFragment
                                 parentFragmentManager.beginTransaction()
                                     .replace(R.id.fragmentContainer, SearchFragment())
                                     .commit()
+                            }
+                            .addOnFailureListener { e ->
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Greška Firestore: ${e.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                     } else {
                         Toast.makeText(
