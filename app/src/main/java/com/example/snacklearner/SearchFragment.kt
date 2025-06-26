@@ -62,7 +62,7 @@ class SearchFragment : Fragment() {
         })
 
 
-        view.findViewById<TextView>(R.id.testSearchFragmentLoaded).visibility = View.VISIBLE
+
 
         loadRecipes()
     }
