@@ -65,9 +65,7 @@ class RecipeDetailsActivity : AppCompatActivity() {
         setupFavoriteManagement()
     }
 
-    /**
-     * Provjerava je li korisnik admin i pokazuje gumb za brisanje
-     */
+    //Provjerava je li korisnik admin i pokazuje gumb za brisanje
     private fun checkUserRoleAndSetUI() {
         val userId = auth.currentUser?.uid ?: return
         firestore.collection("users").document(userId).get()
@@ -79,9 +77,7 @@ class RecipeDetailsActivity : AppCompatActivity() {
             }
     }
 
-    /**
-     * Ako je admin, setup listener za brisanje recepta
-     */
+    //Ako je admin, setup listener za brisanje recepta
     private fun setupDeleteButton() {
         deleteRecipeButton.setOnClickListener {
             firestore.collection("recipes").document(recipeId).delete()
@@ -95,9 +91,7 @@ class RecipeDetailsActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Setup spremanja i uklanjanja iz favorita
-     */
+    //Setup spremanja i uklanjanja iz favorita
     private fun setupFavoriteManagement() {
         val userId = auth.currentUser?.uid
         if (userId == null) {
@@ -139,9 +133,7 @@ class RecipeDetailsActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Ažurira broj lajkova/dislajkova
-     */
+    //Ažurira broj lajkova/dislajkova
     private fun updateLike(isLike: Boolean) {
         val docRef = firestore.collection("recipes").document(recipeId)
         firestore.runTransaction { transaction ->

@@ -45,9 +45,7 @@ class UserAdapter(
         notifyDataSetChanged()
     }
 
-    /**
-     * Omogućuje postavljanje admin mode-a.
-     */
+    //Omogućuje postavljanje admin mode-a
     fun setAdminMode(admin: Boolean) {
         isAdmin = admin
         notifyDataSetChanged()

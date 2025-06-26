@@ -104,7 +104,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             .commit()
     }
 
-    // 🔥 NOVA METODA za prilagodbu menija ovisno o roli:
+    // NOVA METODA za prilagodbu menija ovisno o roli:
     fun updateDrawerForRole(role: String) {
         val menu = navigationView.menu
 
@@ -120,7 +120,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             menu.findItem(R.id.nav_settings)?.isVisible = true
             menu.findItem(R.id.nav_saved)?.isVisible = true
             // Sakrij dodavanje recepta ako nije admin
-            menu.findItem(R.id.nav_add_recipe)?.isVisible = false
+            menu.findItem(R.id.nav_add_recipe)?.isVisible = true
         }
     }
 

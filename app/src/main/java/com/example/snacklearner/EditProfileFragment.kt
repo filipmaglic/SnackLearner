@@ -37,7 +37,7 @@ class EditProfileFragment : Fragment() {
         val newPasswordEditText = view.findViewById<EditText>(R.id.newPasswordEditText)
         val currentPasswordEditText = view.findViewById<EditText>(R.id.currentPasswordEditText)
         val saveButton = view.findViewById<Button>(R.id.saveButton)
-        val backButton = view.findViewById<Button>(R.id.backButton) // ⭐ Novi back gumb
+        val backButton = view.findViewById<Button>(R.id.backButton) // Novi back gumb
 
         val userId = auth.currentUser?.uid
         if (userId == null) {

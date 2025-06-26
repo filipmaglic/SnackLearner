@@ -73,9 +73,7 @@ class AdminFragment : Fragment() {
         }
     }
 
-    /**
-     * Učitava korisnike samo ako je admin.
-     */
+    //Učitava korisnike samo ako je admin.
     private fun loadUsers() {
         firestore.collection("users").get()
             .addOnSuccessListener { result ->
@@ -97,9 +95,7 @@ class AdminFragment : Fragment() {
             }
     }
 
-    /**
-     * Briše korisnika samo ako je admin.
-     */
+    //Briše korisnika samo ako je admin.
     private fun deleteUser(uid: String) {
         if (!isAdmin) {
             Toast.makeText(requireContext(), "Nemate ovlasti.", Toast.LENGTH_SHORT).show()
@@ -116,9 +112,7 @@ class AdminFragment : Fragment() {
             }
     }
 
-    /**
-     * Provjerava je li trenutni korisnik admin.
-     */
+    //provjerava je li trenutni korisnik admin.
     private fun checkIfCurrentUserIsAdmin(callback: (Boolean) -> Unit) {
         val userId = auth.currentUser?.uid
         if (userId == null) {
