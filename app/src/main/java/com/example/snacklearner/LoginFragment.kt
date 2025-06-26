@@ -1,6 +1,5 @@
 package com.example.snacklearner
 
-
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,6 +10,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.drawerlayout.widget.DrawerLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -35,16 +35,13 @@ class LoginFragment : Fragment() {
 
         val activity = requireActivity() as MainActivity
         activity.getToolbar().visibility = View.GONE
-        activity.getDrawerLayout().setDrawerLockMode(
-            androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_LOCKED_CLOSED
-        )
+        activity.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
 
         val usernameEditText = view.findViewById<EditText>(R.id.usernameEditText)
         val passwordEditText = view.findViewById<EditText>(R.id.passwordEditText)
         val loginButton = view.findViewById<Button>(R.id.loginButton)
         val registerButton = view.findViewById<Button>(R.id.registerButton)
 
-        // LOGIN BUTTON
         loginButton.setOnClickListener {
             val email = usernameEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
@@ -58,33 +55,27 @@ class LoginFragment : Fragment() {
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         hideKeyboard(view)
-
                         val uid = auth.currentUser!!.uid
                         firestore.collection("users").document(uid).get()
                             .addOnSuccessListener { doc ->
-                                if (doc.exists()) {
-                                    val role = doc.getString("role")
-                                    if (role == "admin") {
-                                        Toast.makeText(requireContext(), "Prijavljen admin.", Toast.LENGTH_SHORT).show()
-                                        parentFragmentManager.beginTransaction()
-                                            .replace(R.id.fragmentContainer, AdminFragment())
-                                            .commit()
-                                    } else {
-                                        Toast.makeText(requireContext(), "Prijavljen korisnik.", Toast.LENGTH_SHORT).show()
-                                        activity.getToolbar().visibility = View.VISIBLE
-                                        activity.getDrawerLayout().setDrawerLockMode(
-                                            androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_UNLOCKED
-                                        )
-                                        parentFragmentManager.beginTransaction()
-                                            .replace(R.id.fragmentContainer, SearchFragment())
-                                            .commit()
-                                    }
+                                val role = doc.getString("role") ?: "user"
+                                if (role == "admin") {
+                                    Toast.makeText(requireContext(), "Prijavljen admin.", Toast.LENGTH_SHORT).show()
                                 } else {
-                                    Toast.makeText(requireContext(), "Korisnik nema podatke u Firestoreu!", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(requireContext(), "Prijavljen korisnik.", Toast.LENGTH_SHORT).show()
                                 }
-                            }
-                            .addOnFailureListener { e ->
-                                Toast.makeText(requireContext(), "Greška Firestore: ${e.message}", Toast.LENGTH_SHORT).show()
+
+                                // Update UI prema roli
+                                (requireActivity() as MainActivity).updateDrawerForRole(role)
+
+                                // Pokaži toolbar i otključaj Drawer
+                                activity.getToolbar().visibility = View.VISIBLE
+                                activity.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+
+                                // Otvori SearchFragment
+                                parentFragmentManager.beginTransaction()
+                                    .replace(R.id.fragmentContainer, SearchFragment())
+                                    .commit()
                             }
                     } else {
                         Toast.makeText(
@@ -96,7 +87,6 @@ class LoginFragment : Fragment() {
                 }
         }
 
-        // REGISTER BUTTON -> vodi na RegisterFragment
         registerButton.setOnClickListener {
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragmentContainer, RegisterFragment())
