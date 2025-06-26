@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "648235465358",
+    "project_id": "zavrsni-snacklearner",
+    "storage_bucket": "zavrsni-snacklearner.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:648235465358:android:161e556a93f9ce252c27df",
+        "android_client_info": {
+          "package_name": "com.example.snacklearner"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAnfwzS1hyo34iostciEj4mLGqAdU67Wws"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
