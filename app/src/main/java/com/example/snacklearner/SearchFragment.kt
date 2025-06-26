@@ -61,9 +61,6 @@ class SearchFragment : Fragment() {
             ) {}
         })
 
-
-
-
         loadRecipes()
     }
 
